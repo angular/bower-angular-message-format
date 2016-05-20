@@ -1,9 +1,9 @@
 {
   "name": "angular-message-format",
-  "version": "1.5.6-build.4807+sha.9355aea",
+  "version": "1.5.6-build.4808+sha.51cfb61",
   "main": "./angular-message-format.min.js",
   "ignore": [],
   "dependencies": {
-    "angular": "1.5.6-build.4807+sha.9355aea"
+    "angular": "1.5.6-build.4808+sha.51cfb61"
   }
 }
