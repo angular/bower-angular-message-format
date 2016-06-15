@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.5.7-build.4885+sha.6bc81ae
+ * @license AngularJS v1.5.7
  * (c) 2010-2016 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -286,7 +286,7 @@ InterpolationParts.prototype.toParsedFn = function toParsedFn(mustHaveExpression
     $interpolateMinErr['throwNoconcat'](originalText);
   }
   if (this.expressionFns.length === 0) {
-    if (this.textParts.length !== 1) { this.errorInParseLogic(); }
+    if (this.textParts.length != 1) { this.errorInParseLogic(); }
     return parseTextLiteral(this.textParts[0]);
   }
   var parsedFn = function(context) {
@@ -425,7 +425,7 @@ MessageFormatParser.prototype.popState = function popState() {
 MessageFormatParser.prototype.matchRe = function matchRe(re, search) {
   re.lastIndex = this.index;
   var match = re.exec(this.text);
-  if (match != null && (search === true || (match.index === this.index))) {
+  if (match != null && (search === true || (match.index == this.index))) {
     this.index = re.lastIndex;
     return match;
   }
@@ -479,7 +479,7 @@ MessageFormatParser.prototype.errorExpecting = function errorExpecting() {
         position.line, position.column, this.text);
   }
   var word = match[1];
-  if (word === "select" || word === "plural") {
+  if (word == "select" || word == "plural") {
     position = indexToLineAndColumn(this.text, this.index);
     throw $interpolateMinErr('reqcomma',
         'Expected a comma after the keyword “{0}” at line {1}, column {2} of text “{3}”',
@@ -507,7 +507,7 @@ MessageFormatParser.prototype.ruleString = function ruleString() {
 MessageFormatParser.prototype.startStringAtMatch = function startStringAtMatch(match) {
   this.stringStartIndex = match.index;
   this.stringQuote = match[0];
-  this.stringInterestsRe = this.stringQuote === "'" ? SQUOTED_STRING_INTEREST_RE : DQUOTED_STRING_INTEREST_RE;
+  this.stringInterestsRe = this.stringQuote == "'" ? SQUOTED_STRING_INTEREST_RE : DQUOTED_STRING_INTEREST_RE;
   this.rule = this.ruleInsideString;
 };
 
@@ -521,7 +521,8 @@ MessageFormatParser.prototype.ruleInsideString = function ruleInsideString() {
         'The string beginning at line {0}, column {1} is unterminated in text “{2}”',
         position.line, position.column, this.text);
   }
-  if (match[0] === this.stringQuote) {
+  var chars = match[0];
+  if (match == this.stringQuote) {
     this.rule = null;
   }
 };
@@ -630,7 +631,7 @@ MessageFormatParser.prototype.advanceInInterpolationOrMessageText = function adv
       return null;
     }
   } else {
-    match = this.searchRe(this.ruleChoiceKeyword === this.rulePluralValueOrKeyword ?
+    match = this.searchRe(this.ruleChoiceKeyword == this.rulePluralValueOrKeyword ?
                           INTERP_OR_PLURALVALUE_OR_END_MESSAGE_RE : INTERP_OR_END_MESSAGE_RE);
     if (match == null) {
       var position = indexToLineAndColumn(this.text, this.msgStartIndex);
@@ -655,20 +656,20 @@ MessageFormatParser.prototype.ruleInInterpolationOrMessageText = function ruleIn
     this.rule = null;
     return;
   }
-  if (token[0] === "\\") {
+  if (token[0] == "\\") {
     // unescape next character and continue
     this.interpolationParts.addText(this.textPart + token[1]);
     return;
   }
   this.interpolationParts.addText(this.textPart);
-  if (token === "{{") {
+  if (token == "{{") {
     this.pushState();
     this.ruleStack.push(this.ruleEndMustacheInInterpolationOrMessage);
     this.rule = this.ruleEnteredMustache;
-  } else if (token === "}") {
+  } else if (token == "}") {
     this.choices[this.choiceKey] = this.interpolationParts.toParsedFn(/*mustHaveExpression=*/false, this.text);
     this.rule = this.ruleChoiceKeyword;
-  } else if (token === "#") {
+  } else if (token == "#") {
     this.interpolationParts.addExpressionFn(this.expressionMinusOffsetFn);
   } else {
     this.errorInParseLogic();
@@ -692,7 +693,7 @@ MessageFormatParser.prototype.ruleInInterpolation = function ruleInInterpolation
     return;
   }
   var token = match[0];
-  if (token[0] === "\\") {
+  if (token[0] == "\\") {
     // unescape next character and continue
     this.interpolationParts.addText(this.text.substring(currentIndex, match.index) + token[1]);
     return;
@@ -804,12 +805,12 @@ MessageFormatParser.prototype.ruleInAngularExpression = function ruleInAngularEx
         this.getEndOperator(innermostOperator), this.text);
   }
   var operator = match[0];
-  if (operator === "'" || operator === '"') {
+  if (operator == "'" || operator == '"') {
     this.ruleStack.push(this.ruleInAngularExpression);
     this.startStringAtMatch(match);
     return;
   }
-  if (operator === ",") {
+  if (operator == ",") {
     if (this.trustedContext) {
       position = indexToLineAndColumn(this.text, this.index);
       throw $interpolateMinErr('unsafe',
@@ -837,7 +838,7 @@ MessageFormatParser.prototype.ruleInAngularExpression = function ruleInAngularEx
     this.errorInParseLogic();
   }
   if (this.angularOperatorStack.length > 0) {
-    if (beginOperator === this.angularOperatorStack[0]) {
+    if (beginOperator == this.angularOperatorStack[0]) {
       this.angularOperatorStack.shift();
       return;
     }
@@ -865,82 +866,26 @@ MessageFormatParser.prototype.ruleInAngularExpression = function ruleInAngularEx
 /* global stringify: false */
 
 /**
- * @ngdoc module
- * @name ngMessageFormat
- * @packageName angular-message-format
+ * @ngdoc service
+ * @name $$messageFormat
  *
  * @description
+ * Angular internal service to recognize MessageFormat extensions in interpolation expressions.
+ * For more information, see:
+ * https://docs.google.com/a/google.com/document/d/1pbtW2yvtmFBikfRrJd8VAsabiFkKezmYZ_PbgdjQOVU/edit
  *
- * ## What is  ngMessageFormat?
+ * ## Example
  *
- * The ngMessageFormat module extends the Angular {@link ng.$interpolate `$interpolate`} service
- * with a syntax for handling pluralization and gender specific messages, which is based on the
- * [ICU MessageFormat syntax][ICU].
- *
- * See [the design doc][ngMessageFormat doc] for more information.
- *
- * [ICU]: http://userguide.icu-project.org/formatparse/messages#TOC-MessageFormat
- * [ngMessageFormat doc]: https://docs.google.com/a/google.com/document/d/1pbtW2yvtmFBikfRrJd8VAsabiFkKezmYZ_PbgdjQOVU/edit
- *
- * ## Examples
- *
- * ### Gender
- *
- * This example uses the "select" keyword to specify the message based on gender.
- *
- * <example name="ngMessageFormat-example-gender" module="msgFmtExample" deps="angular-message-format.js">
- * <file name="index.html">
- *  <div ng-controller="AppController">
- *    Select Recipient:<br>
-      <select ng-model="recipient" ng-options="person as person.name for person in recipients">
-      </select>
-      <p>{{recipient.gender, select,
-                male {{{recipient.name}} unwrapped his gift. }
-                female {{{recipient.name}} unwrapped her gift. }
-                other {{{recipient.name}} unwrapped their gift. }
-      }}</p>
- *  </div>
- * </file>
- * <file name="script.js">
- *   function Person(name, gender) {
- *     this.name = name;
- *     this.gender = gender;
- *   }
- *
- *   var alice   = new Person("Alice", "female"),
- *       bob     = new Person("Bob", "male"),
- *       ashley = new Person("Ashley", "");
- *
- *   angular.module('msgFmtExample', ['ngMessageFormat'])
- *     .controller('AppController', ['$scope', function($scope) {
- *         $scope.recipients = [alice, bob, ashley];
- *         $scope.recipient = $scope.recipients[0];
- *       }]);
- * </file>
- * </example>
- *
- * ### Plural
- *
- * This example shows how the "plural" keyword is used to account for a variable number of entities.
- * The "#" variable holds the current number and can be embedded in the message.
- *
- * Note that "=1" takes precedence over "one".
- *
- * The example also shows the "offset" keyword, which allows you to offset the value of the "#" variable.
- *
- * <example name="ngMessageFormat-example-plural" module="msgFmtExample" deps="angular-message-format.js">
+ * <example name="ngMessageFormat-example" module="msgFmtExample" deps="angular-message-format.min.js">
  * <file name="index.html">
  *   <div ng-controller="AppController">
- *    <button ng-click="recipients.pop()" id="decreaseRecipients">decreaseRecipients</button><br>
- *    Select recipients:<br>
- *    <select multiple size=5 ng-model="recipients" ng-options="person as person.name for person in people">
- *    </select><br>
- *     <p>{{recipients.length, plural, offset:1
+ *     <button ng-click="decreaseRecipients()" id="decreaseRecipients">decreaseRecipients</button><br>
+ *     <span>{{recipients.length, plural, offset:1
  *             =0    {{{sender.name}} gave no gifts (\#=#)}
- *             =1    {{{sender.name}} gave a gift to {{recipients[0].name}} (\#=#)}
+ *             =1    {{{sender.name}} gave one gift to {{recipients[0].name}} (\#=#)}
  *             one   {{{sender.name}} gave {{recipients[0].name}} and one other person a gift (\#=#)}
  *             other {{{sender.name}} gave {{recipients[0].name}} and # other people a gift (\#=#)}
- *           }}</p>
+ *           }}</span>
  *   </div>
  * </file>
  *
@@ -952,79 +897,35 @@ MessageFormatParser.prototype.ruleInAngularExpression = function ruleInAngularEx
  *
  *   var alice   = new Person("Alice", "female"),
  *       bob     = new Person("Bob", "male"),
- *       sarah     = new Person("Sarah", "female"),
- *       harry   = new Person("Harry Potter", "male"),
- *       ashley   = new Person("Ashley", "");
+ *       charlie = new Person("Charlie", "male"),
+ *       harry   = new Person("Harry Potter", "male");
  *
  *   angular.module('msgFmtExample', ['ngMessageFormat'])
  *     .controller('AppController', ['$scope', function($scope) {
- *         $scope.people = [alice, bob, sarah, ashley];
- *         $scope.recipients = [alice, bob, sarah];
+ *         $scope.recipients = [alice, bob, charlie];
  *         $scope.sender = harry;
+ *         $scope.decreaseRecipients = function() {
+ *           --$scope.recipients.length;
+ *         };
  *       }]);
  * </file>
  *
  * <file name="protractor.js" type="protractor">
  *   describe('MessageFormat plural', function() {
- *
  *     it('should pluralize initial values', function() {
- *       var messageElem = element(by.binding('recipients.length')),
- *           decreaseRecipientsBtn = element(by.id('decreaseRecipients'));
- *
+ *       var messageElem = element(by.binding('recipients.length')), decreaseRecipientsBtn = element(by.id('decreaseRecipients'));
  *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and 2 other people a gift (#=2)');
  *       decreaseRecipientsBtn.click();
  *       expect(messageElem.getText()).toEqual('Harry Potter gave Alice and one other person a gift (#=1)');
  *       decreaseRecipientsBtn.click();
- *       expect(messageElem.getText()).toEqual('Harry Potter gave a gift to Alice (#=0)');
+ *       expect(messageElem.getText()).toEqual('Harry Potter gave one gift to Alice (#=0)');
  *       decreaseRecipientsBtn.click();
  *       expect(messageElem.getText()).toEqual('Harry Potter gave no gifts (#=-1)');
  *     });
  *   });
  * </file>
  * </example>
- *
- * ### Plural and Gender together
- *
- * This example shows how you can specify gender rules for specific plural matches - in this case,
- * =1 is special cased for gender.
- * <example name="ngMessageFormat-example-plural-gender" module="msgFmtExample" deps="angular-message-format.js">
- *   <file name="index.html">
- *     <div ng-controller="AppController">
-       Select recipients:<br>
-       <select multiple size=5 ng-model="recipients" ng-options="person as person.name for person in people">
-       </select><br>
-        <p>{{recipients.length, plural,
-          =0 {{{sender.name}} has not given any gifts to anyone.}
-          =1 {  {{recipients[0].gender, select,
-                 female { {{sender.name}} gave {{recipients[0].name}} her gift.}
-                 male { {{sender.name}} gave {{recipients[0].name}} his gift.}
-                 other { {{sender.name}} gave {{recipients[0].name}} their gift.}
-                }}
-              }
-          other {{{sender.name}} gave {{recipients.length}} people gifts.}
-          }}</p>
-      </file>
- *    <file name="script.js">
- *      function Person(name, gender) {
- *        this.name = name;
- *        this.gender = gender;
- *      }
- *
- *      var alice   = new Person("Alice", "female"),
- *          bob     = new Person("Bob", "male"),
- *          harry   = new Person("Harry Potter", "male"),
- *          ashley   = new Person("Ashley", "");
- *
- *      angular.module('msgFmtExample', ['ngMessageFormat'])
- *        .controller('AppController', ['$scope', function($scope) {
- *            $scope.people = [alice, bob, ashley];
- *            $scope.recipients = [alice];
- *            $scope.sender = harry;
- *          }]);
- *    </file>
-    </example>
  */
-
 var $$MessageFormatFactory = ['$parse', '$locale', '$sce', '$exceptionHandler', function $$messageFormat(
                    $parse,   $locale,   $sce,   $exceptionHandler) {
 
@@ -1053,7 +954,7 @@ var $$MessageFormatFactory = ['$parse', '$locale', '$sce', '$exceptionHandler', 
 }];
 
 var $$interpolateDecorator = ['$$messageFormat', '$delegate', function $$interpolateDecorator($$messageFormat, $interpolate) {
-  if ($interpolate['startSymbol']() !== "{{" || $interpolate['endSymbol']() !== "}}") {
+  if ($interpolate['startSymbol']() != "{{" || $interpolate['endSymbol']() != "}}") {
     throw $interpolateMinErr('nochgmustache', 'angular-message-format.js currently does not allow you to use custom start and end symbols for interpolation.');
   }
   var interpolate = $$messageFormat['interpolate'];
@@ -1062,6 +963,13 @@ var $$interpolateDecorator = ['$$messageFormat', '$delegate', function $$interpo
   return interpolate;
 }];
 
+
+/**
+ * @ngdoc module
+ * @name ngMessageFormat
+ * @packageName angular-message-format
+ * @description
+ */
 var module = window['angular']['module']('ngMessageFormat', ['ng']);
 module['factory']('$$messageFormat', $$MessageFormatFactory);
 module['config'](['$provide', function($provide) {
