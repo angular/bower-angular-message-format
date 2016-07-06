@@ -1,6 +1,6 @@
 {
   "name": "angular-message-format",
-  "version": "1.5.8-build.4924+sha.c4da2f0",
+  "version": "1.5.8-build.4927+sha.ad41baa",
   "description": "AngularJS module for plural and gender MessageFormat extensions $interpolate/interpolations",
   "main": "index.js",
   "scripts": {
