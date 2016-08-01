@@ -17,7 +17,7 @@ npm install angular-message-format
 Then add `ngMessageFormat` as a dependency for your app:
 
 ```javascript
-angular.module('myApp', [require('angular-message-format.min')]);
+angular.module('myApp', [require('angular-message-format')]);
 ```
 
 ### bower
@@ -29,7 +29,7 @@ bower install angular-message-format
 Then add a `<script>` to your `index.html`:
 
 ```html
-<script src="/bower_components/angular-message-format/angular-message-format.min.js"></script>
+<script src="/bower_components/angular-message-format/angular-message-format.js"></script>
 ```
 
 Then add `ngMessageFormat` as a dependency for your app:

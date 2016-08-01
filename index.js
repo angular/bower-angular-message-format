@@ -1,2 +1,2 @@
-require('./angular-message-format.min');
+require('./angular-message-format');
 module.exports = 'ngMessageFormat';
