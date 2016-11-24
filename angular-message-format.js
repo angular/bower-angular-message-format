@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.5.9-build.5160+sha.6e91f9c
+ * @license AngularJS v1.5.9
  * (c) 2010-2016 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -13,7 +13,15 @@
 /* global isFunction: false */
 /* global noop: false */
 /* global toJson: false */
-/* global $$stringify: false */
+
+function stringify(value) {
+  if (value == null /* null/undefined */) { return ''; }
+  switch (typeof value) {
+    case 'string':     return value;
+    case 'number':     return '' + value;
+    default:           return toJson(value);
+  }
+}
 
 // Convert an index into the string into line/column for use in error messages
 // As such, this doesn't have to be efficient.
@@ -854,6 +862,7 @@ MessageFormatParser.prototype.ruleInAngularExpression = function ruleInAngularEx
 /* global noop: true */
 /* global toJson: true */
 /* global MessageFormatParser: false */
+/* global stringify: false */
 
 /**
  * @ngdoc module
@@ -1023,7 +1032,7 @@ var $$MessageFormatFactory = ['$parse', '$locale', '$sce', '$exceptionHandler', 
     return function stringifier(value) {
       try {
         value = trustedContext ? $sce['getTrusted'](trustedContext, value) : $sce['valueOf'](value);
-        return allOrNothing && (value === undefined) ? value : $$stringify(value);
+        return allOrNothing && (value === undefined) ? value : stringify(value);
       } catch (err) {
         $exceptionHandler($interpolateMinErr['interr'](text, err));
       }
@@ -1057,7 +1066,6 @@ var $interpolateMinErr;
 var isFunction;
 var noop;
 var toJson;
-var $$stringify;
 
 var module = window['angular']['module']('ngMessageFormat', ['ng']);
 module['factory']('$$messageFormat', $$MessageFormatFactory);
@@ -1066,7 +1074,6 @@ module['config'](['$provide', function($provide) {
   isFunction = window['angular']['isFunction'];
   noop = window['angular']['noop'];
   toJson = window['angular']['toJson'];
-  $$stringify = window['angular']['$$stringify'];
 
   $provide['decorator']('$interpolate', $$interpolateDecorator);
 }]);
